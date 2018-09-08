@@ -4,10 +4,9 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class Game {
-    public enum GameState { Turn, PlaceTown, PlaceRoad, UpgradeTown, Changing };
+    public enum GameState { StartGame, Game };
+    static public GameState State { get; set; }
     public enum ResourceType { Tree, Rock, Brick, Sheep, Wheat, Desert };
-    static public GameState state = GameState.PlaceTown;
-
     public static int whoPlaying { get; private set; }
     public static List<Player> players;
 
@@ -18,6 +17,8 @@ public class Game {
 
     public static void StartGame()
     {
+        State = GameState.StartGame;
+
         players = new List<Player>();
         players.Add(new Player("Jack", players.Count, Color.blue));
         players.Add(new Player("Paul", players.Count, Color.red));
@@ -27,6 +28,14 @@ public class Game {
             players[i].changes += SetUI;
         
         whoPlaying = 0;
+        
+        for (int i = 0; i < players.Count; i++)
+        {
+            players[i].addRes(ResourceType.Brick, 2);
+            players[i].addRes(ResourceType.Sheep, 2);
+            players[i].addRes(ResourceType.Tree, 2);
+            players[i].addRes(ResourceType.Wheat, 2);
+        }
         
         dices = new Dice[2];
         dices[0] = new Dice();

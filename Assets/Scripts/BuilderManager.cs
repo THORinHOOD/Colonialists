@@ -129,7 +129,13 @@ public class BuilderManager {
         
         bool normWithRoads = (countHisRoads >= 1) && (countOtherRoads <= 1);
 
-        return !hasNeighbors && normWithRoads;
+        if (Game.State == Game.GameState.StartGame)
+        {
+            return !hasNeighbors;
+        } else
+        {
+            return !hasNeighbors && normWithRoads;
+        }
     }
 
     public static bool buildTown(GameObject town, Map map)
@@ -137,21 +143,6 @@ public class BuilderManager {
         Player player = Game.currentPlayer();
         if (hasEnough(costOfTown, player))
         {
-            /*List<GameObject> neighbors = map.townNeighbors(town.GetComponent<Town>().Coord);
-            bool flag = true;
-            foreach (GameObject go in neighbors)
-            {
-                if (go.GetComponent<Town>().Owner != -1)
-                    flag = false;
-            }
-
-            if (flag)
-            {
-                getForBuilding(costOfTown, player);
-                Game.currentPlayer().addTown(town);
-                return true;
-            }*/
-
             if (possibleToBuildTown(town.GetComponent<Town>(), player, map))
             {
                 getForBuilding(costOfTown, player);

@@ -97,9 +97,5 @@ public class InputManager : MonoBehaviour {
                 hexInfo.text = "";
             }
         }
-
-
-
     }
-
 }

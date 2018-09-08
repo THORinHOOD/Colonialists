@@ -30,6 +30,7 @@ public class ConsoleController
         registerCommand("!stock", stock, "Get information about stock of a player");
         registerCommand("!give", give, "Give res to player <player> <resource> <count>");
         registerCommand("!change", change, "Change res between players <player1> <resource1> <count1> <player2> <resource2> <count2>");
+        registerCommand("!statechange", statechange, "Change state of game");
     }
 
     private void registerCommand(string command, CommandHandler handler, string help)
@@ -223,6 +224,19 @@ public class ConsoleController
                 return;
             }
         }
+    }
+
+    private void statechange(string[] args)
+    {
+        if (Game.State == Game.GameState.StartGame)
+        {
+            Game.State = Game.GameState.Game;
+        } else if (Game.State == Game.GameState.Game)
+        {
+            Game.State = Game.GameState.StartGame;
+        }
+        appendLogLine("Current game state : " + Game.State.ToString() + "\n");
+        return;
     }
 
     private void stock(string[] args)
