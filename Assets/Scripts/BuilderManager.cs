@@ -47,7 +47,6 @@ public class BuilderManager {
         player.removeRes(Game.ResourceType.Wheat, cost.getRes(Game.ResourceType.Wheat));
     }
 
-    //TODO
     private static bool possibleToBuildRoad(Road road, Player player, Map map)
     {
         GameObject from = map.getTown(road.From.ToString());
@@ -102,13 +101,43 @@ public class BuilderManager {
         return false;
     }
 
+    //TODO
+    private static bool possibleToBuildTown(Town town, Player player, Map map)
+    {
+        List<GameObject> neighbors = map.townNeighbors(town.GetComponent<Town>().Coord);
+        bool flag = true;
+        foreach (GameObject go in neighbors)
+        {
+            if (go.GetComponent<Town>().Owner != -1)
+                flag = false;
+        }
+
+        bool hasNeighbors = !flag;
+
+        int countHisRoads = 0;
+        int countOtherRoads = 0;
+
+        foreach (GameObject near in neighbors)
+        {
+            GameObject buf = map.getRoad(near.GetComponent<Town>().Coord.ToString() + "-" + town.Coord.ToString());
+            Road currentRoad = buf.GetComponent<Road>();
+            if (currentRoad.Owner == player.Index)
+                countHisRoads++;
+            else if (currentRoad.Owner != -1)
+                countOtherRoads++;
+        }
+        
+        bool normWithRoads = (countHisRoads >= 1) && (countOtherRoads <= 1);
+
+        return !hasNeighbors && normWithRoads;
+    }
 
     public static bool buildTown(GameObject town, Map map)
     {
         Player player = Game.currentPlayer();
         if (hasEnough(costOfTown, player))
         {
-            List<GameObject> neighbors = map.townNeighbors(town.GetComponent<Town>().Coord);
+            /*List<GameObject> neighbors = map.townNeighbors(town.GetComponent<Town>().Coord);
             bool flag = true;
             foreach (GameObject go in neighbors)
             {
@@ -117,6 +146,13 @@ public class BuilderManager {
             }
 
             if (flag)
+            {
+                getForBuilding(costOfTown, player);
+                Game.currentPlayer().addTown(town);
+                return true;
+            }*/
+
+            if (possibleToBuildTown(town.GetComponent<Town>(), player, map))
             {
                 getForBuilding(costOfTown, player);
                 Game.currentPlayer().addTown(town);
