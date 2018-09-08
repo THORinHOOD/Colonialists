@@ -34,7 +34,23 @@ public class Map : MonoBehaviour {
         else
             return null;
     }
-    
+
+    public GameObject getTown(string key)
+    {
+        if (townplaces.ContainsKey(key))
+            return townplaces[key];
+        else
+            return null;
+    }
+
+    public GameObject getRoad(string key)
+    {
+        if (roads.ContainsKey(key))
+            return roads[key];
+        else
+            return null;
+    }
+
     public List<GameObject> townNeighbors(Coord coordOfTown)
     {
         List<GameObject> neighbors = new List<GameObject>();
@@ -119,8 +135,13 @@ public class Map : MonoBehaviour {
                         GameObject roadObj = Instantiate(road, new Vector3(newX, hexDepth / 2.0f, newY), Quaternion.identity);
                         roadObj.transform.SetParent(transform.Find("Roads").transform);
                         roadObj.transform.right = from - to;
-
+                        
                         roadObj.name = "road-" + key + "-" + currentTown.Coord.ToString();
+                        roadObj.GetComponent<Road>().SetFrom(townplaces[key].GetComponent<Town>().Coord);
+                        roadObj.GetComponent<Road>().SetTo(currentTown.Coord);
+
+                        roads.Add(key + "-" + currentTown.Coord.ToString(), roadObj);
+                        roads.Add(currentTown.Coord.ToString() + "-" + key, roadObj);
                     }
                     ++col;
                     key = col + "_" + row;

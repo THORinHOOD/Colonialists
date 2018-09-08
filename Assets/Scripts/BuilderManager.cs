@@ -47,15 +47,57 @@ public class BuilderManager {
         player.removeRes(Game.ResourceType.Wheat, cost.getRes(Game.ResourceType.Wheat));
     }
 
+    //TODO
+    private static bool possibleToBuildRoad(Road road, Player player, Map map)
+    {
+        GameObject from = map.getTown(road.From.ToString());
+        GameObject to = map.getTown(road.To.ToString());
+
+        bool hasTownFrom = from != null && from.GetComponent<Town>().Owner == player.Index;
+        bool hasTownTo = to != null && to.GetComponent<Town>().Owner == player.Index;
+        bool hasTownNear = hasTownFrom || hasTownTo;
+
+        List<GameObject> neighboursFrom = map.townNeighbors(from.GetComponent<Town>().Coord);
+        List<GameObject> neighboursTo = map.townNeighbors(to.GetComponent<Town>().Coord);
+
+        bool hasRoadFrom = false;
+        bool hasRoadTo = false;
+
+        //FROM
+        foreach (GameObject near in neighboursFrom)
+        {
+            GameObject currentRoad = map.getRoad(near.GetComponent<Town>().Coord.ToString() + "-"
+                                                 + from.GetComponent<Town>().Coord.ToString());
+            if (currentRoad.GetComponent<Road>().Owner == player.Index)
+                hasRoadFrom = true;
+        }
+
+        //TO
+        foreach (GameObject near in neighboursTo)
+        {
+            GameObject currentRoad = map.getRoad(near.GetComponent<Town>().Coord.ToString() + "-"
+                                                 + to.GetComponent<Town>().Coord.ToString());
+            if (currentRoad.GetComponent<Road>().Owner == player.Index)
+                hasRoadFrom = true;
+        }
+
+        bool hasRoad = hasRoadFrom || hasRoadTo;
+
+        return hasTownNear || hasRoad;
+    }
+    
     public static bool buildRoad(GameObject road, Map map)
     {
         
         Player player = Game.currentPlayer();
         if (hasEnough(costOfRoad, player))
         {
-            getForBuilding(costOfRoad, player);
-            Game.currentPlayer().addRoad(road);
-            return true;
+            if (possibleToBuildRoad(road.GetComponent<Road>(), player, map))
+            {
+                getForBuilding(costOfRoad, player);
+                Game.currentPlayer().addRoad(road);
+                return true;
+            } 
         }
         return false;
     }

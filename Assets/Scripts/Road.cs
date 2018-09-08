@@ -4,10 +4,14 @@ using UnityEngine;
 
 public class Road : MonoBehaviour {
     public int Owner { get; private set; }
+    public Coord From { get; private set; }
+    public Coord To { get; private set; }
 
     public Road()
     {
         Owner = -1;
+        From = null;
+        To = null;
     }
 
     public void SetOwner(int newOwner)
@@ -16,4 +20,15 @@ public class Road : MonoBehaviour {
             Owner = newOwner;
     }
 
+    public void SetFrom(Coord from)
+    {
+        if (From == null)
+            From = from;
+    }
+
+    public void SetTo(Coord to)
+    {
+        if (To == null)
+            To = to;
+    }
 }
