@@ -6,6 +6,7 @@ public class Map : MonoBehaviour {
 
     public GameObject hex;
     public GameObject townplace;
+    public GameObject road;
 
     public int width = 5;
     public int height = 5;
@@ -19,6 +20,7 @@ public class Map : MonoBehaviour {
 
     private Dictionary<string, GameObject> hexes;
     private Dictionary<string, GameObject> townplaces;
+    private Dictionary<string, GameObject> roads;
 
     void Start () {
         Game.StartGame();
@@ -88,7 +90,48 @@ public class Map : MonoBehaviour {
         return neighbors;
     }
     
-    private void MakeRow(float x_f, float y_f, int count, int row)
+    /// <summary>
+    /// Сначала должен отработать метод CreateTownsGrid !!!
+    /// </summary>
+    private void CreateRoadsGrid()
+    {
+        if (road != null)
+        {
+            roads = new Dictionary<string, GameObject>();
+            
+            for (int row = 0; row < 4 + (height - 1) * 2; row += 2)
+            {
+                int col = 0;
+                string key = col + "_" + row;
+                while (townplaces.ContainsKey(key))
+                {
+                    List<GameObject> buf = townNeighbors(new Coord(col, row));
+
+                    Vector3 from = townplaces[key].transform.position;
+                    foreach (GameObject nTown in buf)
+                    {
+                        Town currentTown = nTown.GetComponent<Town>();
+                        Vector3 to = nTown.transform.position;
+
+                        float newX = (from.x + to.x) / 2f;
+                        float newY = (from.z + to.z) / 2f;
+
+                        GameObject roadObj = Instantiate(road, new Vector3(newX, hexDepth / 2.0f, newY), Quaternion.identity);
+                        roadObj.transform.SetParent(transform.Find("Roads").transform);
+                        roadObj.transform.right = from - to;
+
+                        roadObj.name = "road-" + key + "-" + currentTown.Coord.ToString();
+                    }
+                    ++col;
+                    key = col + "_" + row;
+                }
+            }
+        } else
+            Debug.LogError("road prefab not found!!!");
+    }
+
+
+    private void MakeRow_Town(float x_f, float y_f, int count, int row)
     {
         if (townplace != null) {
             float x = x_f;
@@ -105,7 +148,7 @@ public class Map : MonoBehaviour {
         } else
             Debug.LogError("townplace prefab not found!!!");
     }
-
+    
     private void CreateTownsGrid(float x_c, float y_c)
     {
         if (townplace != null)
@@ -129,7 +172,7 @@ public class Map : MonoBehaviour {
                 if ((i != 0 && i != height) || (i == height && height % 2 == 0))
                     count = width + 1;
                 
-                MakeRow(x, y, count, row);
+                MakeRow_Town(x, y, count, row);
                 row += 3;
                 if (i % 2 != 0)
                     row -= 2;
@@ -154,7 +197,7 @@ public class Map : MonoBehaviour {
                     count--;
                 }
                 
-                MakeRow(x, y, count, row);
+                MakeRow_Town(x, y, count, row);
                 row += 3;
                 if (i % 2 == 0)
                     row -= 2;
@@ -214,20 +257,24 @@ public class Map : MonoBehaviour {
     private void CreateMap()
     {
         Game.giveResources += GiveResources;
-        if (hex != null)
+        if (hex != null || townplace != null  || road != null)
         {
             hexes = new Dictionary<string, GameObject>();
             float startX = transform.position.x;
             float startY = transform.position.z;
             
+            //установить дороги
             for (int x = 0; x < width; x++)
                 for (int y = 0; y < height; y++)
                     hexes.Add((new Coord(x, y)).ToString(), CreateHex(x , y, startX, startY));
             
+            //установить города
             CreateTownsGrid(startX, startY);
+            //установить дороги
+            CreateRoadsGrid();
         }
         else
-            Debug.LogError("Prefab of hex not found");
+            Debug.LogError("Prefab of hex or townplace or road not found");
     }
 
     private GameObject CreateHex(int x, int y, float startX = 0, float startY = 0)

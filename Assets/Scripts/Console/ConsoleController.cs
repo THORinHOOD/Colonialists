@@ -175,7 +175,7 @@ public class ConsoleController
 
         string player = args[0];
         string res = args[1];
-        string count = args[2];
+        
 
         int toFind_player = Game.getPlayerByName(player);
 
@@ -184,21 +184,44 @@ public class ConsoleController
             appendLogLine("Error, " + player + " not found player with this name\n");
             return;
         }
-
-        Game.ResourceType toFind_res = Game.getResByName(res);
-        if (toFind_res == Game.ResourceType.Desert)
+        
+        if (res == "all")
         {
-            appendLogLine("Error, " + res + " not found res with this name\n");
-            return;
-        }
+            string count = args[2];
 
-        int toFind_count;
-        if (Int32.TryParse(count, out toFind_count))
-            Game.players[toFind_player].addRes(toFind_res, toFind_count);
+            int toFind_count;
+            if (Int32.TryParse(count, out toFind_count))
+            {
+                Game.players[toFind_player].addRes(Game.ResourceType.Tree, toFind_count);
+                Game.players[toFind_player].addRes(Game.ResourceType.Brick, toFind_count);
+                Game.players[toFind_player].addRes(Game.ResourceType.Rock, toFind_count);
+                Game.players[toFind_player].addRes(Game.ResourceType.Sheep, toFind_count);
+                Game.players[toFind_player].addRes(Game.ResourceType.Wheat, toFind_count);
+            }
+            else
+            {
+                appendLogLine("Error, " + count + " is not number\n");
+                return;
+            }
+        }
         else
         {
-            appendLogLine("Error, " + count + " is not number\n");
-            return;
+            string count = args[2];
+            Game.ResourceType toFind_res = Game.getResByName(res);
+            if (toFind_res == Game.ResourceType.Desert)
+            {
+                appendLogLine("Error, " + res + " not found res with this name\n");
+                return;
+            }
+
+            int toFind_count;
+            if (Int32.TryParse(count, out toFind_count))
+                Game.players[toFind_player].addRes(toFind_res, toFind_count);
+            else
+            {
+                appendLogLine("Error, " + count + " is not number\n");
+                return;
+            }
         }
     }
 

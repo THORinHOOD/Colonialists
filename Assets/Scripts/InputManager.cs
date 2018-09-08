@@ -7,15 +7,19 @@ public class InputManager : MonoBehaviour {
 
     public GameObject map;
     private GameObject choosedPlaceTown;
+    private GameObject choosedRoad;
     private Text hexInfo;
 
     void Start () {
-       hexInfo = GameObject.Find("Canvas/Caption_HexInfo").GetComponent<Text>();
+        hexInfo = GameObject.Find("Canvas/Caption_HexInfo").GetComponent<Text>();
+        choosedPlaceTown = null;
+        choosedRoad = null;
     }
 	
 	void Update () {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hitInfo;
+
         if (Physics.Raycast(ray, out hitInfo)) {
             if (choosedPlaceTown != null)
             {
@@ -23,6 +27,14 @@ public class InputManager : MonoBehaviour {
                     choosedPlaceTown.GetComponentInChildren<MeshRenderer>().enabled = false;
                 choosedPlaceTown = null;
             }
+
+            if (choosedRoad != null)
+            {
+                if (choosedRoad.GetComponent<Road>().Owner == -1)
+                    choosedRoad.GetComponentInChildren<MeshRenderer>().enabled = false;
+                choosedRoad = null;
+            }
+            
 
             GameObject smthHit = hitInfo.collider.transform.parent.gameObject;
             
@@ -35,6 +47,20 @@ public class InputManager : MonoBehaviour {
                     {
                         if (map != null)
                             BuilderManager.buildTown(choosedPlaceTown, map.GetComponent<Map>());
+                        else
+                            Debug.LogError("Map not found!!!");
+                    }
+                }
+            } else if (smthHit.name.Contains("road"))
+            {
+                if (smthHit.GetComponent<Road>().Owner == -1)
+                {
+                    choosedRoad = smthHit;
+                    choosedRoad.GetComponentInChildren<MeshRenderer>().enabled = true;
+                    if (Input.GetMouseButtonDown(0))
+                    {
+                        if (map != null)
+                            BuilderManager.buildRoad(choosedRoad, map.GetComponent<Map>());
                         else
                             Debug.LogError("Map not found!!!");
                     }
@@ -58,6 +84,12 @@ public class InputManager : MonoBehaviour {
             {
                 choosedPlaceTown.GetComponentInChildren<MeshRenderer>().enabled = false;
                 choosedPlaceTown = null;
+            }
+
+            if (choosedRoad != null)
+            {
+                choosedRoad.GetComponentInChildren<MeshRenderer>().enabled = false;
+                choosedRoad = null;
             }
 
             if (hexInfo != null)

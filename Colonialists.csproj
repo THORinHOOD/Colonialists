@@ -88,6 +88,7 @@
     <Compile Include="Assets\Scripts\InputManager.cs" />
     <Compile Include="Assets\Scripts\Map.cs" />
     <Compile Include="Assets\Scripts\Player.cs" />
+    <Compile Include="Assets\Scripts\Road.cs" />
     <Compile Include="Assets\Scripts\Stock.cs" />
     <Compile Include="Assets\Scripts\Town.cs" />
   </ItemGroup>

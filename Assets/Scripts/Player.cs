@@ -22,6 +22,7 @@ public class Player {
         Index = index;
         stock = new Stock();
         towns = new List<GameObject>();
+        roads = new List<GameObject>();
     }
     
     public void addTown(GameObject town)
@@ -31,6 +32,15 @@ public class Player {
         town.GetComponentInChildren<MeshRenderer>().enabled = true;
         towns.Add(town);
         Game.Log(Name + ": build a town");
+    }
+
+    public void addRoad(GameObject road)
+    {
+        road.GetComponent<Road>().SetOwner(Index);
+        road.GetComponentInChildren<Renderer>().material.color = Color;
+        road.GetComponentInChildren<MeshRenderer>().enabled = true;
+        roads.Add(road);
+        Game.Log(Name + ": build a road");
     }
 
     public void removeRes(Game.ResourceType type, int count)

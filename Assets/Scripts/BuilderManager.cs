@@ -5,10 +5,19 @@ using UnityEngine;
 public class BuilderManager {
 
     private static Stock costOfTown;
+    private static Stock costOfRoad;
     
     static BuilderManager()
     {
         setCostOfTown();
+        setCostOfRoad();
+    }
+
+    private static void setCostOfRoad()
+    {
+        costOfRoad = new Stock();
+        costOfRoad.addRes(Game.ResourceType.Brick, 1);
+        costOfRoad.addRes(Game.ResourceType.Tree, 1);
     }
 
     private static void setCostOfTown()
@@ -37,6 +46,20 @@ public class BuilderManager {
         player.removeRes(Game.ResourceType.Rock, cost.getRes(Game.ResourceType.Rock));
         player.removeRes(Game.ResourceType.Wheat, cost.getRes(Game.ResourceType.Wheat));
     }
+
+    public static bool buildRoad(GameObject road, Map map)
+    {
+        
+        Player player = Game.currentPlayer();
+        if (hasEnough(costOfRoad, player))
+        {
+            getForBuilding(costOfRoad, player);
+            Game.currentPlayer().addRoad(road);
+            return true;
+        }
+        return false;
+    }
+
 
     public static bool buildTown(GameObject town, Map map)
     {
